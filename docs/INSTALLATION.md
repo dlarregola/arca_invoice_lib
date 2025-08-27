@@ -25,7 +25,8 @@ Para usar los Web Services de AFIP necesitas:
 
 ```bash
 # Instalar la librería
-go get github.com/afip-go
+go get github.com/dlarregola/arca_invoice_lib
+
 
 # O clonar el repositorio
 git clone https://github.com/afip-go/afip-go.git
