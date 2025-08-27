@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"arca_invoice_lib/pkg/models"
+	"github.com/dlarregola/arca_invoice_lib/pkg/models"
 	"context"
 )
 

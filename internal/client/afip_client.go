@@ -1,11 +1,11 @@
 package client
 
 import (
-	"arca_invoice_lib/internal/services/auth"
-	"arca_invoice_lib/internal/services/wsfe"
-	"arca_invoice_lib/internal/services/wsfex"
-	"arca_invoice_lib/internal/shared"
-	"arca_invoice_lib/pkg/interfaces"
+	"github.com/dlarregola/arca_invoice_lib/internal/services/auth"
+	"github.com/dlarregola/arca_invoice_lib/internal/services/wsfe"
+	"github.com/dlarregola/arca_invoice_lib/internal/services/wsfex"
+	"github.com/dlarregola/arca_invoice_lib/internal/shared"
+	"github.com/dlarregola/arca_invoice_lib/pkg/interfaces"
 	"context"
 	"fmt"
 	"net/http"

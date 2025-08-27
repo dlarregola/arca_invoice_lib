@@ -1,8 +1,8 @@
 package factory
 
 import (
-	"arca_invoice_lib/internal/client"
-	"arca_invoice_lib/pkg/interfaces"
+	"github.com/dlarregola/arca_invoice_lib/internal/client"
+	"github.com/dlarregola/arca_invoice_lib/pkg/interfaces"
 	"time"
 )
 

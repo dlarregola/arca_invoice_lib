@@ -1,8 +1,8 @@
 package wsfe
 
 import (
-	"arca_invoice_lib/pkg/interfaces"
-	"arca_invoice_lib/pkg/models"
+	"github.com/dlarregola/arca_invoice_lib/pkg/interfaces"
+	"github.com/dlarregola/arca_invoice_lib/pkg/models"
 	"context"
 	"fmt"
 	"time"

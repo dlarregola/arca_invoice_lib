@@ -1,9 +1,9 @@
 package client
 
 import (
-	"arca_invoice_lib/internal/shared"
-	"arca_invoice_lib/pkg/errors"
-	"arca_invoice_lib/pkg/interfaces"
+	"github.com/dlarregola/arca_invoice_lib/internal/shared"
+	"github.com/dlarregola/arca_invoice_lib/pkg/errors"
+	"github.com/dlarregola/arca_invoice_lib/pkg/interfaces"
 	"context"
 	"fmt"
 	"sync"

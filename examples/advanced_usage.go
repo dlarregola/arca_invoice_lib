@@ -8,10 +8,10 @@ import (
 	"sync"
 	"time"
 
-	"arca_invoice_lib/internal/client"
-	"arca_invoice_lib/pkg/factory"
-	"arca_invoice_lib/pkg/interfaces"
-	"arca_invoice_lib/pkg/models"
+	"github.com/dlarregola/arca_invoice_lib/internal/client"
+	"github.com/dlarregola/arca_invoice_lib/pkg/factory"
+	"github.com/dlarregola/arca_invoice_lib/pkg/interfaces"
+	"github.com/dlarregola/arca_invoice_lib/pkg/models"
 )
 
 // AdvancedCompanyConfiguration implementa la interfaz CompanyConfig

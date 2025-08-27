@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"arca_invoice_lib/internal/shared"
-	"arca_invoice_lib/pkg/interfaces"
+	"github.com/dlarregola/arca_invoice_lib/internal/shared"
+	"github.com/dlarregola/arca_invoice_lib/pkg/interfaces"
 )
 
 // NewAuthService crea un nuevo servicio de autenticación

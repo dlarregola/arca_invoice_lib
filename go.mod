@@ -1,4 +1,4 @@
-module arca_invoice_lib
+module github.com/dlarregola/arca_invoice_lib
 
 go 1.23.3
 

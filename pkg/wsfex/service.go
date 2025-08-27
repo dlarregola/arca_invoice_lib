@@ -1,9 +1,9 @@
 package wsfex
 
 import (
-	"arca_invoice_lib/internal/utils"
-	"arca_invoice_lib/pkg/client"
-	"arca_invoice_lib/pkg/models"
+	"github.com/dlarregola/arca_invoice_lib/internal/utils"
+	"github.com/dlarregola/arca_invoice_lib/pkg/client"
+	"github.com/dlarregola/arca_invoice_lib/pkg/models"
 	"context"
 	"fmt"
 )
