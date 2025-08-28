@@ -9,38 +9,48 @@ import (
 
 // ClientManagerFactory es la interfaz para crear managers
 type ClientManagerFactory interface {
-	CreateManager(config client.ManagerConfig) interfaces.ARCAClientManager
+	CreateManager() interfaces.ARCAClientManager
 }
 
 // clientManagerFactory es la implementación privada del factory
-type clientManagerFactory struct{}
+type clientManagerFactory struct {
+	config client.ManagerConfig
+}
 
-// NewClientManagerFactory crea una nueva instancia del factory
-func NewClientManagerFactory() ClientManagerFactory {
-	return &clientManagerFactory{}
+// NewClientManagerFactory crea una nueva instancia del factor
+// Add config params to the factory to override the default values
+func NewClientManagerFactory(cacheSize int, idleTimeout time.Duration, httpTimeout time.Duration, maxRetryAttempts int, logger interfaces.Logger) ClientManagerFactory {
+	config := client.ManagerConfig{
+		ClientCacheSize:   cacheSize,
+		ClientIdleTimeout: idleTimeout,
+		HTTPTimeout:       httpTimeout,
+		MaxRetryAttempts:  maxRetryAttempts,
+		Logger:            logger,
+	}
+	return &clientManagerFactory{config: config}
 }
 
 // CreateManager crea un nuevo manager con la configuración especificada
-func (f *clientManagerFactory) CreateManager(config client.ManagerConfig) interfaces.ARCAClientManager {
+func (f *clientManagerFactory) CreateManager() interfaces.ARCAClientManager {
 	// Configurar valores por defecto
-	if config.ClientCacheSize <= 0 {
-		config.ClientCacheSize = 100
+	if f.config.ClientCacheSize <= 0 {
+		f.config.ClientCacheSize = 100
 	}
-	if config.ClientIdleTimeout <= 0 {
-		config.ClientIdleTimeout = 30 * time.Minute
+	if f.config.ClientIdleTimeout <= 0 {
+		f.config.ClientIdleTimeout = 30 * time.Minute
 	}
-	if config.HTTPTimeout <= 0 {
-		config.HTTPTimeout = 30 * time.Second
+	if f.config.HTTPTimeout <= 0 {
+		f.config.HTTPTimeout = 30 * time.Second
 	}
-	if config.MaxRetryAttempts <= 0 {
-		config.MaxRetryAttempts = 3
+	if f.config.MaxRetryAttempts <= 0 {
+		f.config.MaxRetryAttempts = 3
 	}
-	if config.Logger == nil {
-		config.Logger = &noopLogger{}
+	if f.config.Logger == nil {
+		f.config.Logger = &noopLogger{}
 	}
 
 	// Crear manager
-	return createClientManager(config)
+	return createClientManager(f.config)
 }
 
 // noopLogger es un logger que no hace nada
