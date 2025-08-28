@@ -1,19 +1,20 @@
 package client
 
 import (
+	"context"
+	"fmt"
+	"net/http"
+	"sync"
+
 	"github.com/dlarregola/arca_invoice_lib/internal/services/auth"
 	"github.com/dlarregola/arca_invoice_lib/internal/services/wsfe"
 	"github.com/dlarregola/arca_invoice_lib/internal/services/wsfex"
 	"github.com/dlarregola/arca_invoice_lib/internal/shared"
 	"github.com/dlarregola/arca_invoice_lib/pkg/interfaces"
-	"context"
-	"fmt"
-	"net/http"
-	"sync"
 )
 
-// afipClient es la implementación privada del cliente AFIP
-type afipClient struct {
+// arcaClient es la implementación privada del cliente ARCA
+type arcaClient struct {
 	companyConfig interfaces.CompanyConfig
 	config        *shared.InternalConfig
 	wsfeService   interfaces.WSFEService
@@ -26,17 +27,17 @@ type afipClient struct {
 }
 
 // WSFE retorna el servicio de facturación nacional
-func (c *afipClient) WSFE() interfaces.WSFEService {
+func (c *arcaClient) WSFE() interfaces.WSFEService {
 	return c.wsfeService
 }
 
 // WSFEX retorna el servicio de facturación internacional
-func (c *afipClient) WSFEX() interfaces.WSFEXService {
+func (c *arcaClient) WSFEX() interfaces.WSFEXService {
 	return c.wsfexService
 }
 
 // GetCompanyInfo retorna información de la empresa
-func (c *afipClient) GetCompanyInfo() interfaces.CompanyInfo {
+func (c *arcaClient) GetCompanyInfo() interfaces.CompanyInfo {
 	return interfaces.CompanyInfo{
 		CompanyID:   c.companyConfig.GetCompanyID(),
 		CUIT:        c.companyConfig.GetCUIT(),
@@ -45,7 +46,7 @@ func (c *afipClient) GetCompanyInfo() interfaces.CompanyInfo {
 }
 
 // IsHealthy verifica el estado de la conexión
-func (c *afipClient) IsHealthy(ctx context.Context) error {
+func (c *arcaClient) IsHealthy(ctx context.Context) error {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 
@@ -63,7 +64,7 @@ func (c *afipClient) IsHealthy(ctx context.Context) error {
 }
 
 // Close cierra el cliente y limpia recursos
-func (c *afipClient) Close() error {
+func (c *arcaClient) Close() error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
@@ -87,7 +88,7 @@ func (c *afipClient) Close() error {
 }
 
 // initializeServices inicializa los servicios del cliente
-func (c *afipClient) initializeServices() error {
+func (c *arcaClient) initializeServices() error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
@@ -118,7 +119,7 @@ func (c *afipClient) initializeServices() error {
 }
 
 // getBaseURL retorna la URL base según el environment
-func (c *afipClient) getBaseURL() string {
+func (c *arcaClient) getBaseURL() string {
 	switch c.config.Environment {
 	case "testing":
 		return "https://wswhomo.afip.gov.ar"
@@ -130,16 +131,16 @@ func (c *afipClient) getBaseURL() string {
 }
 
 // getWSAAURL retorna la URL del servicio WSAA
-func (c *afipClient) getWSAAURL() string {
+func (c *arcaClient) getWSAAURL() string {
 	return c.getBaseURL() + "/ws/services/LoginCms"
 }
 
 // getWSFEURL retorna la URL del servicio WSFEv1
-func (c *afipClient) getWSFEURL() string {
+func (c *arcaClient) getWSFEURL() string {
 	return c.getBaseURL() + "/wsfev1/service.asmx"
 }
 
 // getWSFEXURL retorna la URL del servicio WSFEXv1
-func (c *afipClient) getWSFEXURL() string {
+func (c *arcaClient) getWSFEXURL() string {
 	return c.getBaseURL() + "/wsfexv1/service.asmx"
 }

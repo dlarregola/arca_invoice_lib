@@ -87,14 +87,14 @@ func (p *DatabaseCompanyConfigProvider) GetCompanyConfig(ctx context.Context, co
 
 // AdvancedInvoiceService maneja facturas para múltiples empresas
 type AdvancedInvoiceService struct {
-	afipManager    interfaces.AFIPClientManager
+	arcaManager    interfaces.ARCAClientManager
 	logger         interfaces.Logger
 	configProvider *DatabaseCompanyConfigProvider
 }
 
-func NewAdvancedInvoiceService(afipManager interfaces.AFIPClientManager, logger interfaces.Logger, configProvider *DatabaseCompanyConfigProvider) *AdvancedInvoiceService {
+func NewAdvancedInvoiceService(arcaManager interfaces.ARCAClientManager, logger interfaces.Logger, configProvider *DatabaseCompanyConfigProvider) *AdvancedInvoiceService {
 	return &AdvancedInvoiceService{
-		afipManager:    afipManager,
+		arcaManager:    arcaManager,
 		logger:         logger,
 		configProvider: configProvider,
 	}
@@ -112,10 +112,10 @@ func (s *AdvancedInvoiceService) CreateInvoice(ctx context.Context, companyID st
 	}
 
 	// Obtener cliente específico de la empresa
-	client, err := s.afipManager.GetClientForCompany(ctx, companyConfig)
+	client, err := s.arcaManager.GetClientForCompany(ctx, companyConfig)
 	if err != nil {
-		s.logger.Errorf("Failed to get AFIP client: %v", err)
-		return nil, fmt.Errorf("failed to get AFIP client: %w", err)
+		s.logger.Errorf("Failed to get ARCA client: %v", err)
+		return nil, fmt.Errorf("failed to get ARCA client: %w", err)
 	}
 
 	// Autorizar factura
@@ -217,13 +217,13 @@ func (cm *AdvancedCacheManager) cleanupPeriodic() {
 
 // PerformanceMonitor monitorea el rendimiento
 type PerformanceMonitor struct {
-	afipManager interfaces.AFIPClientManager
+	arcaManager interfaces.ARCAClientManager
 	logger      interfaces.Logger
 }
 
-func NewPerformanceMonitor(afipManager interfaces.AFIPClientManager, logger interfaces.Logger) *PerformanceMonitor {
+func NewPerformanceMonitor(arcaManager interfaces.ARCAClientManager, logger interfaces.Logger) *PerformanceMonitor {
 	pm := &PerformanceMonitor{
-		afipManager: afipManager,
+		arcaManager: arcaManager,
 		logger:      logger,
 	}
 
@@ -238,7 +238,7 @@ func (pm *PerformanceMonitor) monitorPeriodic() {
 	defer ticker.Stop()
 
 	for range ticker.C {
-		stats := pm.afipManager.GetCacheStats()
+		stats := pm.arcaManager.GetCacheStats()
 		pm.logger.Infof("Performance Stats: %+v", stats)
 
 		// Alertar si hay muchos clientes inactivos
@@ -248,7 +248,7 @@ func (pm *PerformanceMonitor) monitorPeriodic() {
 
 		// Limpiar clientes inactivos si es necesario
 		if stats.InactiveClients > 10 {
-			pm.afipManager.CleanupInactiveClients(15 * time.Minute)
+			pm.arcaManager.CleanupInactiveClients(15 * time.Minute)
 			pm.logger.Infof("Cleaned up inactive clients")
 		}
 	}

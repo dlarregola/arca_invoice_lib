@@ -1,8 +1,8 @@
-# Documentación AFIP Go Library
+# Documentación ARCA Go Library
 
 ## Bienvenido a la Documentación
 
-Esta documentación está dividida en dos secciones principales para facilitar la comprensión y uso de la librería AFIP Go:
+Esta documentación está dividida en dos secciones principales para facilitar la comprensión y uso de la librería ARCA Go:
 
 ## 📚 Secciones de Documentación
 
@@ -16,7 +16,7 @@ Esta sección contiene información detallada sobre:
 - 🏭 **Patrón Factory** - Creación y configuración de managers
 - 🔌 **Interfaces y Abstracciones** - Diseño de APIs públicas
 - ⚠️ **Manejo de Errores** - Jerarquía y estrategias de errores
-- 🔐 **Autenticación WSAA** - Sistema de autenticación AFIP
+- 🔐 **Autenticación WSAA** - Sistema de autenticación ARCA
 - 🔒 **Thread Safety** - Concurrencia y sincronización
 - ✅ **Configuración y Validación** - Validaciones y configuraciones
 - 🤔 **Decisiones de Implementación** - Justificación de decisiones técnicas
@@ -26,7 +26,7 @@ Esta sección contiene información detallada sobre:
 
 Esta sección contiene información práctica sobre:
 - 📦 **Instalación** - Cómo instalar y configurar la librería
-- ⚙️ **Configuración Inicial** - Primeros pasos y certificados AFIP
+- ⚙️ **Configuración Inicial** - Primeros pasos y certificados ARCA
 - 🚀 **Uso Básico** - Ejemplos básicos de uso
 - 🏢 **Patrón Multi-Tenant** - Cómo usar con múltiples empresas
 - 🔧 **Servicios Disponibles** - WSFE y WSFEX con ejemplos
@@ -110,13 +110,13 @@ func main() {
 ## 📋 Requisitos Previos
 
 - **Go 1.19+** - Versión mínima de Go
-- **Certificado AFIP** - Certificado X.509 de AFIP
+- **Certificado ARCA** - Certificado X.509 de ARCA
 - **Clave Privada** - Clave privada correspondiente al certificado
-- **CUIT Habilitado** - CUIT habilitado en AFIP para los servicios
+- **CUIT Habilitado** - CUIT habilitado en ARCA para los servicios
 
 ## 🔗 Enlaces Útiles
 
-- [AFIP Web Services](https://www.afip.gob.ar/ws) - Documentación oficial de AFIP
+- [ARCA Web Services](https://www.afip.gob.ar/ws) - Documentación oficial de ARCA
 - [Go Modules](https://golang.org/ref/mod) - Documentación de módulos de Go
 - [GitHub Repository](https://github.com/your-org/arca_invoice_lib) - Código fuente
 
@@ -130,7 +130,7 @@ Para contribuir a la documentación:
 
 ## 📞 Soporte
 
-- 📧 **Email**: support@afip-go.com
+- 📧 **Email**: support@arca-go.com
 - 🐛 **Issues**: [GitHub Issues](https://github.com/your-org/arca_invoice_lib/issues)
 - 📖 **Documentación**: Esta documentación
 

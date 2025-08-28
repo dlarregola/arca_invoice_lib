@@ -4,31 +4,31 @@ import (
 	"fmt"
 )
 
-// AFIPError representa un error específico de AFIP
-type AFIPError struct {
+// ARCAError representa un error específico de ARCA
+type ARCAError struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
 	Company string `json:"company,omitempty"`
 }
 
-func (e *AFIPError) Error() string {
+func (e *ARCAError) Error() string {
 	if e.Company != "" {
-		return fmt.Sprintf("[%s] AFIP Error %s: %s", e.Company, e.Code, e.Message)
+		return fmt.Sprintf("[%s] ARCA Error %s: %s", e.Company, e.Code, e.Message)
 	}
-	return fmt.Sprintf("AFIP Error %s: %s", e.Code, e.Message)
+	return fmt.Sprintf("ARCA Error %s: %s", e.Code, e.Message)
 }
 
-// NewAFIPError crea un nuevo error de AFIP
-func NewAFIPError(code, message string) *AFIPError {
-	return &AFIPError{
+// NewARCAError crea un nuevo error de ARCA
+func NewARCAError(code, message string) *ARCAError {
+	return &ARCAError{
 		Code:    code,
 		Message: message,
 	}
 }
 
-// NewAFIPErrorWithCompany crea un nuevo error de AFIP con información de empresa
-func NewAFIPErrorWithCompany(code, message, company string) *AFIPError {
-	return &AFIPError{
+// NewARCAErrorWithCompany crea un nuevo error de ARCA con información de empresa
+func NewARCAErrorWithCompany(code, message, company string) *ARCAError {
+	return &ARCAError{
 		Code:    code,
 		Message: message,
 		Company: company,

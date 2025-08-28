@@ -1,4 +1,4 @@
-# Guía de Uso - AFIP Go Library
+# Guía de Uso - ARCA Go Library
 
 ## Índice
 
@@ -18,9 +18,9 @@
 ### Requisitos Previos
 
 - Go 1.19 o superior
-- Certificado X.509 de AFIP
+- Certificado X.509 de ARCA
 - Clave privada correspondiente
-- CUIT habilitado en AFIP
+- CUIT habilitado en ARCA
 
 ### Instalación de la Librería
 
@@ -40,12 +40,12 @@ import (
 
 ## Configuración Inicial
 
-### 1. Obtener Certificados AFIP
+### 1. Obtener Certificados ARCA
 
-Para usar la librería necesitas obtener certificados de AFIP:
+Para usar la librería necesitas obtener certificados de ARCA:
 
-1. **Registrarse en AFIP**: Crear cuenta en [AFIP](https://www.afip.gob.ar)
-2. **Solicitar Certificado**: Generar certificado X.509 en el sistema de AFIP
+1. **Registrarse en ARCA**: Crear cuenta en [ARCA](https://www.arca.gob.ar)
+2. **Solicitar Certificado**: Generar certificado X.509 en el sistema de ARCA
 3. **Descargar Archivos**: Obtener el certificado (.crt) y clave privada (.key)
 
 ### 2. Configuración de Empresa
@@ -184,20 +184,20 @@ func (l *MyLogger) Errorf(format string, args ...interface{}) {
 ```go
 // InvoiceService maneja facturas para múltiples empresas
 type InvoiceService struct {
-    afipManager interfaces.AFIPClientManager
+    arcaManager interfaces.ARCAClientManager
 }
 
-func NewInvoiceService(afipManager interfaces.AFIPClientManager) *InvoiceService {
+func NewInvoiceService(arcaManager interfaces.ARCAClientManager) *InvoiceService {
     return &InvoiceService{
-        afipManager: afipManager,
+        arcaManager: arcaManager,
     }
 }
 
 func (s *InvoiceService) CreateInvoice(ctx context.Context, companyConfig interfaces.CompanyConfig, invoiceData *models.Invoice) (*models.AuthorizationResponse, error) {
     // Obtener cliente específico de la empresa
-    client, err := s.afipManager.GetClientForCompany(ctx, companyConfig)
+    client, err := s.arcaManager.GetClientForCompany(ctx, companyConfig)
     if err != nil {
-        return nil, fmt.Errorf("failed to get AFIP client: %w", err)
+        return nil, fmt.Errorf("failed to get ARCA client: %w", err)
     }
     
     // Usar servicio de facturación nacional
@@ -211,9 +211,9 @@ func (s *InvoiceService) CreateInvoice(ctx context.Context, companyConfig interf
 
 func (s *InvoiceService) CreateExportInvoice(ctx context.Context, companyConfig interfaces.CompanyConfig, exportInvoice *models.ExportInvoice) (*models.ExportAuthResponse, error) {
     // Obtener cliente específico de la empresa
-    client, err := s.afipManager.GetClientForCompany(ctx, companyConfig)
+    client, err := s.arcaManager.GetClientForCompany(ctx, companyConfig)
     if err != nil {
-        return nil, fmt.Errorf("failed to get AFIP client: %w", err)
+        return nil, fmt.Errorf("failed to get ARCA client: %w", err)
     }
     
     // Usar servicio de facturación internacional
@@ -231,15 +231,15 @@ func (s *InvoiceService) CreateExportInvoice(ctx context.Context, companyConfig 
 ```go
 func (s *InvoiceService) ManageCache() {
     // Obtener estadísticas del cache
-    stats := s.afipManager.GetCacheStats()
+    stats := s.arcaManager.GetCacheStats()
     log.Printf("Cache Stats: Total=%d, Active=%d, Inactive=%d", 
         stats.TotalClients, stats.ActiveClients, stats.InactiveClients)
 
     // Limpiar clientes inactivos (más de 5 minutos)
-    s.afipManager.CleanupInactiveClients(5 * time.Minute)
+    s.arcaManager.CleanupInactiveClients(5 * time.Minute)
 
     // Invalidar cliente específico
-    s.afipManager.InvalidateClient("empresa-001")
+    s.arcaManager.InvalidateClient("empresa-001")
 }
 ```
 
@@ -282,7 +282,7 @@ func (p *DatabaseCompanyConfigProvider) GetCompanyConfig(ctx context.Context, co
 
 ```go
 func (s *InvoiceService) CreateNationalInvoice(ctx context.Context, companyConfig interfaces.CompanyConfig) error {
-    client, err := s.afipManager.GetClientForCompany(ctx, companyConfig)
+    client, err := s.arcaManager.GetClientForCompany(ctx, companyConfig)
     if err != nil {
         return err
     }
@@ -339,7 +339,7 @@ func (s *InvoiceService) CreateNationalInvoice(ctx context.Context, companyConfi
 
 ```go
 func (s *InvoiceService) QueryInvoice(ctx context.Context, companyConfig interfaces.CompanyConfig) error {
-    client, err := s.afipManager.GetClientForCompany(ctx, companyConfig)
+    client, err := s.arcaManager.GetClientForCompany(ctx, companyConfig)
     if err != nil {
         return err
     }
@@ -368,7 +368,7 @@ func (s *InvoiceService) QueryInvoice(ctx context.Context, companyConfig interfa
 
 ```go
 func (s *InvoiceService) GetLastInvoice(ctx context.Context, companyConfig interfaces.CompanyConfig) error {
-    client, err := s.afipManager.GetClientForCompany(ctx, companyConfig)
+    client, err := s.arcaManager.GetClientForCompany(ctx, companyConfig)
     if err != nil {
         return err
     }
@@ -391,7 +391,7 @@ func (s *InvoiceService) GetLastInvoice(ctx context.Context, companyConfig inter
 
 ```go
 func (s *InvoiceService) CreateExportInvoice(ctx context.Context, companyConfig interfaces.CompanyConfig) error {
-    client, err := s.afipManager.GetClientForCompany(ctx, companyConfig)
+    client, err := s.arcaManager.GetClientForCompany(ctx, companyConfig)
     if err != nil {
         return err
     }
@@ -440,7 +440,7 @@ func (s *InvoiceService) CreateExportInvoice(ctx context.Context, companyConfig 
 
 ```go
 func (s *InvoiceService) QueryExportInvoice(ctx context.Context, companyConfig interfaces.CompanyConfig) error {
-    client, err := s.afipManager.GetClientForCompany(ctx, companyConfig)
+    client, err := s.arcaManager.GetClientForCompany(ctx, companyConfig)
     if err != nil {
         return err
     }
@@ -472,7 +472,7 @@ func (s *InvoiceService) QueryExportInvoice(ctx context.Context, companyConfig i
 
 ```go
 func (s *InvoiceService) GetSystemParameters(ctx context.Context, companyConfig interfaces.CompanyConfig) error {
-    client, err := s.afipManager.GetClientForCompany(ctx, companyConfig)
+    client, err := s.arcaManager.GetClientForCompany(ctx, companyConfig)
     if err != nil {
         return err
     }
@@ -493,7 +493,7 @@ func (s *InvoiceService) GetSystemParameters(ctx context.Context, companyConfig 
 
 ```go
 func (s *InvoiceService) GetCurrencyTypes(ctx context.Context, companyConfig interfaces.CompanyConfig) error {
-    client, err := s.afipManager.GetClientForCompany(ctx, companyConfig)
+    client, err := s.arcaManager.GetClientForCompany(ctx, companyConfig)
     if err != nil {
         return err
     }
@@ -591,7 +591,7 @@ func isRetryableError(err error) bool {
 ### 1. Configuración de Timeouts
 
 ```go
-func createManagerWithCustomTimeouts() interfaces.AFIPClientManager {
+func createManagerWithCustomTimeouts() interfaces.ARCAClientManager {
     factory := factory.NewClientManagerFactory()
     
     return factory.CreateManager(factory.ManagerConfig{
@@ -607,7 +607,7 @@ func createManagerWithCustomTimeouts() interfaces.AFIPClientManager {
 ### 2. Configuración de Cache
 
 ```go
-func configureCache(manager interfaces.AFIPClientManager) {
+func configureCache(manager interfaces.ARCAClientManager) {
     // Obtener estadísticas iniciales
     stats := manager.GetCacheStats()
     log.Printf("Initial cache stats: %+v", stats)
@@ -631,7 +631,7 @@ func configureCache(manager interfaces.AFIPClientManager) {
 
 ```go
 func (s *InvoiceService) HealthCheck(ctx context.Context, companyConfig interfaces.CompanyConfig) error {
-    client, err := s.afipManager.GetClientForCompany(ctx, companyConfig)
+    client, err := s.arcaManager.GetClientForCompany(ctx, companyConfig)
     if err != nil {
         return fmt.Errorf("failed to get client: %w", err)
     }
@@ -658,13 +658,13 @@ func (s *InvoiceService) HealthCheck(ctx context.Context, companyConfig interfac
 ```go
 // InvoiceService completo con todos los métodos
 type InvoiceService struct {
-    afipManager interfaces.AFIPClientManager
+    arcaManager interfaces.ARCAClientManager
     logger      interfaces.Logger
 }
 
-func NewInvoiceService(afipManager interfaces.AFIPClientManager, logger interfaces.Logger) *InvoiceService {
+func NewInvoiceService(arcaManager interfaces.ARCAClientManager, logger interfaces.Logger) *InvoiceService {
     return &InvoiceService{
-        afipManager: afipManager,
+        arcaManager: arcaManager,
         logger:      logger,
     }
 }
@@ -673,10 +673,10 @@ func NewInvoiceService(afipManager interfaces.AFIPClientManager, logger interfac
 func (s *InvoiceService) CreateInvoice(ctx context.Context, companyConfig interfaces.CompanyConfig, invoiceData *models.Invoice) (*models.AuthorizationResponse, error) {
     s.logger.Infof("Creating invoice for company %s", companyConfig.GetCompanyID())
     
-    client, err := s.afipManager.GetClientForCompany(ctx, companyConfig)
+    client, err := s.arcaManager.GetClientForCompany(ctx, companyConfig)
     if err != nil {
         s.logger.Errorf("Failed to get client: %v", err)
-        return nil, fmt.Errorf("failed to get AFIP client: %w", err)
+        return nil, fmt.Errorf("failed to get ARCA client: %w", err)
     }
     
     response, err := client.WSFE().AuthorizeInvoice(ctx, invoiceData)
@@ -693,10 +693,10 @@ func (s *InvoiceService) CreateInvoice(ctx context.Context, companyConfig interf
 func (s *InvoiceService) CreateExportInvoice(ctx context.Context, companyConfig interfaces.CompanyConfig, exportInvoice *models.ExportInvoice) (*models.ExportAuthResponse, error) {
     s.logger.Infof("Creating export invoice for company %s", companyConfig.GetCompanyID())
     
-    client, err := s.afipManager.GetClientForCompany(ctx, companyConfig)
+    client, err := s.arcaManager.GetClientForCompany(ctx, companyConfig)
     if err != nil {
         s.logger.Errorf("Failed to get client: %v", err)
-        return nil, fmt.Errorf("failed to get AFIP client: %w", err)
+        return nil, fmt.Errorf("failed to get ARCA client: %w", err)
     }
     
     response, err := client.WSFEX().AuthorizeExportInvoice(ctx, exportInvoice)
@@ -713,10 +713,10 @@ func (s *InvoiceService) CreateExportInvoice(ctx context.Context, companyConfig 
 func (s *InvoiceService) QueryInvoice(ctx context.Context, companyConfig interfaces.CompanyConfig, query *models.InvoiceQuery) (*models.Invoice, error) {
     s.logger.Infof("Querying invoice for company %s", companyConfig.GetCompanyID())
     
-    client, err := s.afipManager.GetClientForCompany(ctx, companyConfig)
+    client, err := s.arcaManager.GetClientForCompany(ctx, companyConfig)
     if err != nil {
         s.logger.Errorf("Failed to get client: %v", err)
-        return nil, fmt.Errorf("failed to get AFIP client: %w", err)
+        return nil, fmt.Errorf("failed to get ARCA client: %w", err)
     }
     
     invoice, err := client.WSFE().QueryInvoice(ctx, query)
@@ -1041,7 +1041,7 @@ if err != nil {
 #### Monitoreo
 
 ```go
-func monitorPerformance(manager interfaces.AFIPClientManager) {
+func monitorPerformance(manager interfaces.ARCAClientManager) {
     ticker := time.NewTicker(5 * time.Minute)
     defer ticker.Stop()
     

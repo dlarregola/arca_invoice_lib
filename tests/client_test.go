@@ -205,20 +205,20 @@ func TestClientCreation(t *testing.T) {
 		AuthCacheTTL:  23 * time.Hour,
 	}
 
-	afipClient, err := client.NewAFIPClient(validConfig)
+	arcaClient, err := client.NewARCAClient(validConfig)
 	if err != nil {
-		t.Errorf("NewAFIPClient() should not return error with valid config: %v", err)
+		t.Errorf("NewARCAClient() should not return error with valid config: %v", err)
 	}
 
-	if afipClient == nil {
-		t.Error("NewAFIPClient() should return a client")
+	if arcaClient == nil {
+		t.Error("NewARCAClient() should return a client")
 	}
 
 	// Verificar que los servicios están disponibles
 	// Nota: Los servicios WSFE y WSFEX necesitan ser configurados después de crear el cliente
 	// Por ahora verificamos que el cliente se creó correctamente
-	if afipClient == nil {
-		t.Error("AFIP client should not be nil")
+	if arcaClient == nil {
+		t.Error("ARCA client should not be nil")
 	}
 
 	// Test con configuración inválida
@@ -232,9 +232,9 @@ func TestClientCreation(t *testing.T) {
 		AuthCacheTTL:  23 * time.Hour,
 	}
 
-	_, err = client.NewAFIPClient(invalidConfig)
+	_, err = client.NewARCAClient(invalidConfig)
 	if err == nil {
-		t.Error("NewAFIPClient() should return error with invalid config")
+		t.Error("NewARCAClient() should return error with invalid config")
 	}
 }
 
@@ -249,13 +249,13 @@ func TestSystemStatus(t *testing.T) {
 		AuthCacheTTL:  23 * time.Hour,
 	}
 
-	afipClient, err := client.NewAFIPClient(config)
+	arcaClient, err := client.NewARCAClient(config)
 	if err != nil {
 		t.Skipf("Skipping test due to client creation error: %v", err)
 	}
 
 	ctx := context.Background()
-	status, err := afipClient.GetSystemStatus(ctx)
+	status, err := arcaClient.GetSystemStatus(ctx)
 
 	// En un ambiente de testing sin certificados válidos, esperamos un error
 	// pero el status debería tener información básica
@@ -279,22 +279,22 @@ func TestAuthCache(t *testing.T) {
 		AuthCacheTTL:  23 * time.Hour,
 	}
 
-	afipClient, err := client.NewAFIPClient(config)
+	arcaClient, err := client.NewARCAClient(config)
 	if err != nil {
 		t.Skipf("Skipping test due to client creation error: %v", err)
 	}
 
 	// Verificar tamaño inicial del cache
-	initialSize := afipClient.GetAuthCacheSize()
+	initialSize := arcaClient.GetAuthCacheSize()
 	if initialSize != 0 {
 		t.Errorf("Initial cache size should be 0, got %d", initialSize)
 	}
 
 	// Limpiar cache
-	afipClient.ClearAuthCache()
+	arcaClient.ClearAuthCache()
 
 	// Verificar que el cache está vacío
-	size := afipClient.GetAuthCacheSize()
+	size := arcaClient.GetAuthCacheSize()
 	if size != 0 {
 		t.Errorf("Cache size after clear should be 0, got %d", size)
 	}

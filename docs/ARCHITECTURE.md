@@ -17,7 +17,7 @@
 
 ### Visión General
 
-La librería implementa una arquitectura modular y extensible para interactuar con los Web Services de AFIP, diseñada específicamente para entornos multi-tenant con alta concurrencia y escalabilidad.
+La librería implementa una arquitectura modular y extensible para interactuar con los Web Services de ARCA, diseñada específicamente para entornos multi-tenant con alta concurrencia y escalabilidad.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -37,7 +37,7 @@ La librería implementa una arquitectura modular y extensible para interactuar c
 ├─────────────────────────────────────────────────────────────────┤
 │                      EXTERNAL SERVICES                          │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐ │
-│  │   AFIP WSAA     │  │   AFIP WSFE     │  │   AFIP WSFEX    │ │
+│  │   ARCA WSAA     │  │   ARCA WSFE     │  │   ARCA WSFEX    │ │
 │  │  (Auth Service) │  │ (Nat. Invoice)  │  │ (Export Invoice)│ │
 │  └─────────────────┘  └─────────────────┘  └─────────────────┘ │
 └─────────────────────────────────────────────────────────────────┘
@@ -55,7 +55,7 @@ La librería implementa una arquitectura modular y extensible para interactuar c
 
 ### Diseño del Manager
 
-El `AFIPClientManager` implementa el patrón multi-tenant con las siguientes características:
+El `ARCAClientManager` implementa el patrón multi-tenant con las siguientes características:
 
 ```go
 type clientManager struct {
@@ -69,7 +69,7 @@ type clientManager struct {
 
 ### Ventajas del Diseño Multi-Tenant
 
-1. **Aislamiento**: Cada empresa tiene su propia instancia de cliente AFIP
+1. **Aislamiento**: Cada empresa tiene su propia instancia de cliente ARCA
 2. **Escalabilidad**: El cache permite reutilizar conexiones activas
 3. **Configuración Dinámica**: Las configuraciones se cargan en tiempo de ejecución
 4. **Gestión de Recursos**: Control granular sobre el ciclo de vida de los clientes
@@ -94,7 +94,7 @@ El sistema de cache implementa un patrón LRU (Least Recently Used) con las sigu
 
 ```go
 type cachedClient struct {
-    client    interfaces.AFIPClient  // Cliente AFIP
+    client    interfaces.ARCAClient  // Cliente ARCA
     lastUsed  time.Time              // Último uso
     companyID string                 // ID de la empresa
     createdAt time.Time              // Fecha de creación
@@ -121,7 +121,7 @@ type cachedClient struct {
 ### Implementación del Cache
 
 ```go
-func (m *clientManager) getCachedClient(companyID string) interfaces.AFIPClient {
+func (m *clientManager) getCachedClient(companyID string) interfaces.ARCAClient {
     m.cacheMutex.RLock()
     defer m.cacheMutex.RUnlock()
 
@@ -162,7 +162,7 @@ El patrón Factory se implementa para crear managers de manera flexible y config
 
 ```go
 type ClientManagerFactory interface {
-    CreateManager(config client.ManagerConfig) interfaces.AFIPClientManager
+    CreateManager(config client.ManagerConfig) interfaces.ARCAClientManager
 }
 ```
 
@@ -217,8 +217,8 @@ if config.Logger == nil {
 
 ```
 interfaces/
-├── AFIPClientManager     # Manager principal multi-tenant
-├── AFIPClient           # Cliente específico de empresa
+├── ARCAClientManager     # Manager principal multi-tenant
+├── ARCAClient           # Cliente específico de empresa
 ├── WSFEService          # Servicio de facturación nacional
 ├── WSFEXService         # Servicio de facturación internacional
 ├── CompanyConfig        # Configuración de empresa
@@ -228,10 +228,10 @@ interfaces/
 
 ### Diseño de Interfaces
 
-#### 1. AFIPClientManager
+#### 1. ARCAClientManager
 ```go
-type AFIPClientManager interface {
-    GetClientForCompany(ctx context.Context, companyConfig CompanyConfig) (AFIPClient, error)
+type ARCAClientManager interface {
+    GetClientForCompany(ctx context.Context, companyConfig CompanyConfig) (ARCAClient, error)
     ValidateCompanyConfig(config CompanyConfig) error
     CleanupInactiveClients(maxIdleTime time.Duration)
     InvalidateClient(companyID string)
@@ -239,9 +239,9 @@ type AFIPClientManager interface {
 }
 ```
 
-#### 2. AFIPClient
+#### 2. ARCAClient
 ```go
-type AFIPClient interface {
+type ARCAClient interface {
     WSFE() WSFEService
     WSFEX() WSFEXService
     GetCompanyInfo() CompanyInfo
@@ -274,7 +274,7 @@ type CompanyConfig interface {
 
 ```go
 // Errores base
-type AFIPError struct {
+type ARCAError struct {
     Code    string `json:"code"`
     Message string `json:"message"`
     Details string `json:"details,omitempty"`
@@ -282,18 +282,18 @@ type AFIPError struct {
 
 // Errores específicos
 type CompanyConfigError struct {
-    AFIPError
+    ARCAError
     CompanyID string `json:"company_id"`
     Field     string `json:"field"`
 }
 
 type AuthenticationError struct {
-    AFIPError
+    ARCAError
     Service string `json:"service"`
 }
 
 type InvoiceError struct {
-    AFIPError
+    ARCAError
     InvoiceType string `json:"invoice_type"`
     PointOfSale int    `json:"point_of_sale"`
 }
@@ -309,7 +309,7 @@ type InvoiceError struct {
 ### Ejemplo de Manejo de Errores
 
 ```go
-func (m *clientManager) GetClientForCompany(ctx context.Context, companyConfig interfaces.CompanyConfig) (interfaces.AFIPClient, error) {
+func (m *clientManager) GetClientForCompany(ctx context.Context, companyConfig interfaces.CompanyConfig) (interfaces.ARCAClient, error) {
     // Validar configuración
     if err := m.ValidateCompanyConfig(companyConfig); err != nil {
         return nil, fmt.Errorf("invalid company config: %w", err)
@@ -329,7 +329,7 @@ func (m *clientManager) GetClientForCompany(ctx context.Context, companyConfig i
 
 ### Arquitectura de Autenticación
 
-El sistema de autenticación implementa el protocolo WSAA (Web Service de Autenticación y Autorización) de AFIP:
+El sistema de autenticación implementa el protocolo WSAA (Web Service de Autenticación y Autorización) de ARCA:
 
 ```
 1. Request Ticket → WSAA Service
@@ -377,7 +377,7 @@ type clientManager struct {
 
 #### 2. Operaciones de Lectura
 ```go
-func (m *clientManager) getCachedClient(companyID string) interfaces.AFIPClient {
+func (m *clientManager) getCachedClient(companyID string) interfaces.ARCAClient {
     m.cacheMutex.RLock()
     defer m.cacheMutex.RUnlock()
     // Operaciones de solo lectura
@@ -386,7 +386,7 @@ func (m *clientManager) getCachedClient(companyID string) interfaces.AFIPClient 
 
 #### 3. Operaciones de Escritura
 ```go
-func (m *clientManager) cacheClient(companyID string, client interfaces.AFIPClient) {
+func (m *clientManager) cacheClient(companyID string, client interfaces.ARCAClient) {
     m.cacheMutex.Lock()
     defer m.cacheMutex.Unlock()
     // Operaciones de escritura
@@ -521,7 +521,7 @@ const (
 
 **Razones**:
 - Control total sobre requests
-- Optimización específica para AFIP
+- Optimización específica para ARCA
 - Manejo de errores personalizado
 - Logging detallado
 

@@ -138,7 +138,7 @@ func loadCertificates(certPath, keyPath string) ([]byte, []byte, error) {
 }
 
 // createNationalInvoice crea una factura nacional de ejemplo
-func createNationalInvoice(ctx context.Context, client interfaces.AFIPClient) error {
+func createNationalInvoice(ctx context.Context, client interfaces.ARCAClient) error {
 	// Crear factura
 	invoice := &models.Invoice{
 		InvoiceBase: models.InvoiceBase{
@@ -187,7 +187,7 @@ func createNationalInvoice(ctx context.Context, client interfaces.AFIPClient) er
 }
 
 // createExportInvoice crea una factura de exportación de ejemplo
-func createExportInvoice(ctx context.Context, client interfaces.AFIPClient) error {
+func createExportInvoice(ctx context.Context, client interfaces.ARCAClient) error {
 	// Crear factura de exportación
 	exportInvoice := &models.ExportInvoice{
 		InvoiceBase: models.InvoiceBase{
@@ -228,7 +228,7 @@ func createExportInvoice(ctx context.Context, client interfaces.AFIPClient) erro
 }
 
 // queryInvoice consulta una factura de ejemplo
-func queryInvoice(ctx context.Context, client interfaces.AFIPClient) error {
+func queryInvoice(ctx context.Context, client interfaces.ARCAClient) error {
 	// Crear consulta
 	query := &models.InvoiceQuery{
 		InvoiceType:   models.InvoiceTypeA,
@@ -249,7 +249,7 @@ func queryInvoice(ctx context.Context, client interfaces.AFIPClient) error {
 }
 
 // getSystemParameters obtiene parámetros del sistema
-func getSystemParameters(ctx context.Context, client interfaces.AFIPClient) error {
+func getSystemParameters(ctx context.Context, client interfaces.ARCAClient) error {
 	// Obtener tipos de documento
 	docTypes, err := client.WSFE().GetDocumentTypes(ctx)
 	if err != nil {

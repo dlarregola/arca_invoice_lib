@@ -1,7 +1,6 @@
 package soap
 
 import (
-	"github.com/dlarregola/arca_invoice_lib/pkg/models"
 	"bytes"
 	"context"
 	"crypto/tls"
@@ -10,6 +9,8 @@ import (
 	"io"
 	"net/http"
 	"time"
+
+	"github.com/dlarregola/arca_invoice_lib/pkg/models"
 
 	"github.com/sirupsen/logrus"
 )
@@ -80,7 +81,7 @@ func (c *Client) Call(ctx context.Context, action string, request interface{}, r
 	// Configurar headers
 	req.Header.Set("Content-Type", "text/xml; charset=utf-8")
 	req.Header.Set("SOAPAction", action)
-	req.Header.Set("User-Agent", "AFIP-Go-Client/1.0")
+	req.Header.Set("User-Agent", "ARCA-Go-Client/1.0")
 
 	// Realizar request
 	resp, err := c.httpClient.Do(req)
@@ -112,18 +113,18 @@ func (c *Client) Call(ctx context.Context, action string, request interface{}, r
 	// Parsear response SOAP
 	var responseEnvelope SOAPEnvelope
 	if err := xml.Unmarshal(responseBody, &responseEnvelope); err != nil {
-		return models.NewAFIPError(models.ErrorCodeInvalidResponse, fmt.Sprintf("error unmarshaling SOAP response: %v", err))
+		return models.NewARCAError(models.ErrorCodeInvalidResponse, fmt.Sprintf("error unmarshaling SOAP response: %v", err))
 	}
 
 	// Verificar si hay error SOAP
 	if responseEnvelope.Body.Fault != nil {
 		fault := responseEnvelope.Body.Fault
-		return models.NewAFIPError(fault.FaultCode, fault.FaultString)
+		return models.NewARCAError(fault.FaultCode, fault.FaultString)
 	}
 
 	// Parsear contenido de respuesta
 	if err := xml.Unmarshal(responseEnvelope.Body.Content, response); err != nil {
-		return models.NewAFIPError(models.ErrorCodeInvalidResponse, fmt.Sprintf("error unmarshaling response content: %v", err))
+		return models.NewARCAError(models.ErrorCodeInvalidResponse, fmt.Sprintf("error unmarshaling response content: %v", err))
 	}
 
 	return nil

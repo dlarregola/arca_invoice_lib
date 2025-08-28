@@ -25,7 +25,7 @@ type WSAAAuth struct {
 	logger     interface{}
 }
 
-// AccessTicket representa un ticket de acceso de AFIP
+// AccessTicket representa un ticket de acceso de ARCA
 type AccessTicket struct {
 	Token          string    `xml:"token"`
 	Sign           string    `xml:"sign"`
@@ -234,7 +234,7 @@ func (a *WSAAAuth) callWSAA(ctx context.Context, cms string) (string, error) {
 	// Configurar headers
 	req.Header.Set("Content-Type", "text/xml; charset=utf-8")
 	req.Header.Set("SOAPAction", "http://wsaa.view.sua.dvadac.desein.afip.gov/loginCms")
-	req.Header.Set("User-Agent", "AFIP-Go-Client/1.0")
+	req.Header.Set("User-Agent", "ARCA-Go-Client/1.0")
 
 	// Realizar request
 	client := &http.Client{Timeout: a.config.Timeout}

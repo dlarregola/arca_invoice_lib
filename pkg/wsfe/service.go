@@ -93,7 +93,7 @@ func (s *Service) AuthorizeInvoice(ctx context.Context, invoice *Invoice) (*mode
 	// Verificar errores
 	if len(response.Errors) > 0 {
 		error := response.Errors[0]
-		return nil, models.NewAFIPError(error.Code, error.Message)
+		return nil, models.NewARCAError(error.Code, error.Message)
 	}
 
 	// Crear resultado
@@ -148,7 +148,7 @@ func (s *Service) GetInvoice(ctx context.Context, pointOfSale, invoiceType, invo
 	// Verificar errores
 	if len(response.Errors) > 0 {
 		error := response.Errors[0]
-		return nil, models.NewAFIPError(error.Code, error.Message)
+		return nil, models.NewARCAError(error.Code, error.Message)
 	}
 
 	// Crear factura
@@ -200,7 +200,7 @@ func (s *Service) GetLastAuthorizedInvoice(ctx context.Context, pointOfSale, inv
 	// Verificar errores
 	if len(response.Errors) > 0 {
 		error := response.Errors[0]
-		return nil, models.NewAFIPError(error.Code, error.Message)
+		return nil, models.NewARCAError(error.Code, error.Message)
 	}
 
 	// Crear resultado
@@ -238,7 +238,7 @@ func (s *Service) GetParameters(ctx context.Context) (*models.Parameters, error)
 	// Verificar errores
 	if len(response.Errors) > 0 {
 		error := response.Errors[0]
-		return nil, models.NewAFIPError(error.Code, error.Message)
+		return nil, models.NewARCAError(error.Code, error.Message)
 	}
 
 	// Crear parámetros
@@ -320,7 +320,7 @@ func (s *Service) GetCAEA(ctx context.Context, period, order, fiscalYear int) (*
 	// Verificar errores
 	if len(response.Errors) > 0 {
 		error := response.Errors[0]
-		return nil, models.NewAFIPError(error.Code, error.Message)
+		return nil, models.NewARCAError(error.Code, error.Message)
 	}
 
 	return &response, nil

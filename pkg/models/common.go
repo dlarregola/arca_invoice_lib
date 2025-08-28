@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-// Environment representa el ambiente de AFIP
+// Environment representa el ambiente de ARCA
 type Environment string
 
 const (

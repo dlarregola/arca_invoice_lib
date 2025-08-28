@@ -17,11 +17,11 @@ type Logger interface {
 	Errorf(format string, args ...interface{})
 }
 
-// AFIPClientManager es la interfaz principal para el manager multi-tenant
-type AFIPClientManager interface {
+// ARCAClientManager es la interfaz principal para el manager multi-tenant
+type ARCAClientManager interface {
 	// GetClientForCompany obtiene un cliente específico para una empresa
 	// La configuración se pasa directamente en tiempo de ejecución para mejor escalabilidad
-	GetClientForCompany(ctx context.Context, companyConfig CompanyConfig) (AFIPClient, error)
+	GetClientForCompany(ctx context.Context, companyConfig CompanyConfig) (ARCAClient, error)
 
 	// ValidateCompanyConfig valida la configuración de una empresa
 	ValidateCompanyConfig(config CompanyConfig) error
@@ -36,8 +36,8 @@ type AFIPClientManager interface {
 	GetCacheStats() CacheStats
 }
 
-// AFIPClient es la interfaz para un cliente de una empresa específica
-type AFIPClient interface {
+// ARCAClient es la interfaz para un cliente de una empresa específica
+type ARCAClient interface {
 	// WSFE retorna el servicio de facturación nacional
 	WSFE() WSFEService
 

@@ -1,11 +1,12 @@
 package wsfex
 
 import (
+	"context"
+	"fmt"
+
 	"github.com/dlarregola/arca_invoice_lib/internal/utils"
 	"github.com/dlarregola/arca_invoice_lib/pkg/client"
 	"github.com/dlarregola/arca_invoice_lib/pkg/models"
-	"context"
-	"fmt"
 )
 
 // Service representa el servicio WSFEXv1
@@ -96,7 +97,7 @@ func (s *Service) AuthorizeExportInvoice(ctx context.Context, invoice *ExportInv
 	// Verificar errores
 	if len(response.Errors) > 0 {
 		error := response.Errors[0]
-		return nil, models.NewAFIPError(error.Code, error.Message)
+		return nil, models.NewARCAError(error.Code, error.Message)
 	}
 
 	// Crear resultado
@@ -151,7 +152,7 @@ func (s *Service) GetExportInvoice(ctx context.Context, pointOfSale, invoiceType
 	// Verificar errores
 	if len(response.Errors) > 0 {
 		error := response.Errors[0]
-		return nil, models.NewAFIPError(error.Code, error.Message)
+		return nil, models.NewARCAError(error.Code, error.Message)
 	}
 
 	// Crear factura
@@ -203,7 +204,7 @@ func (s *Service) GetLastAuthorizedExportInvoice(ctx context.Context, pointOfSal
 	// Verificar errores
 	if len(response.Errors) > 0 {
 		error := response.Errors[0]
-		return nil, models.NewAFIPError(error.Code, error.Message)
+		return nil, models.NewARCAError(error.Code, error.Message)
 	}
 
 	// Crear resultado
@@ -241,7 +242,7 @@ func (s *Service) GetExportParameters(ctx context.Context) (*models.Parameters, 
 	// Verificar errores
 	if len(response.Errors) > 0 {
 		error := response.Errors[0]
-		return nil, models.NewAFIPError(error.Code, error.Message)
+		return nil, models.NewARCAError(error.Code, error.Message)
 	}
 
 	// Crear parámetros
@@ -314,7 +315,7 @@ func (s *Service) GetExportCAEA(ctx context.Context, period, order, fiscalYear i
 	// Verificar errores
 	if len(response.Errors) > 0 {
 		error := response.Errors[0]
-		return nil, models.NewAFIPError(error.Code, error.Message)
+		return nil, models.NewARCAError(error.Code, error.Message)
 	}
 
 	return &response, nil

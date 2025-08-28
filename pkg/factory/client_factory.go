@@ -1,14 +1,15 @@
 package factory
 
 import (
+	"time"
+
 	"github.com/dlarregola/arca_invoice_lib/internal/client"
 	"github.com/dlarregola/arca_invoice_lib/pkg/interfaces"
-	"time"
 )
 
 // ClientManagerFactory es la interfaz para crear managers
 type ClientManagerFactory interface {
-	CreateManager(config client.ManagerConfig) interfaces.AFIPClientManager
+	CreateManager(config client.ManagerConfig) interfaces.ARCAClientManager
 }
 
 // clientManagerFactory es la implementación privada del factory
@@ -20,7 +21,7 @@ func NewClientManagerFactory() ClientManagerFactory {
 }
 
 // CreateManager crea un nuevo manager con la configuración especificada
-func (f *clientManagerFactory) CreateManager(config client.ManagerConfig) interfaces.AFIPClientManager {
+func (f *clientManagerFactory) CreateManager(config client.ManagerConfig) interfaces.ARCAClientManager {
 	// Configurar valores por defecto
 	if config.ClientCacheSize <= 0 {
 		config.ClientCacheSize = 100
@@ -56,7 +57,7 @@ func (l *noopLogger) Errorf(format string, args ...interface{}) {}
 
 // createClientManager crea una nueva instancia del manager
 // Esta función debe ser implementada en el paquete internal/client
-func createClientManager(config client.ManagerConfig) interfaces.AFIPClientManager {
+func createClientManager(config client.ManagerConfig) interfaces.ARCAClientManager {
 	// Esta es una función stub que será reemplazada por la implementación real
 	// en el paquete internal/client
 	return client.NewClientManager(config)

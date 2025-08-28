@@ -3,7 +3,7 @@
 ## Requisitos Previos
 
 ### 1. CUIT Habilitado
-Para usar los Web Services de AFIP necesitas:
+Para usar los Web Services de ARCA necesitas:
 
 - **CUIT habilitado** para facturación electrónica
 - **Certificado X.509** (.crt)
@@ -12,8 +12,8 @@ Para usar los Web Services de AFIP necesitas:
 ### 2. Obtener Certificados
 
 #### Paso 1: Solicitar Certificado
-1. Ingresar a [AFIP](https://www.afip.gob.ar)
-2. Ir a **Mi AFIP** > **Web Services**
+1. Ingresar a [ARCA](https://www.arca.gob.ar)
+2. Ir a **Mi ARCA** > **Web Services**
 3. Solicitar certificado para **WSFEv1** y **WSFEXv1**
 
 #### Paso 2: Descargar Certificados
@@ -29,8 +29,8 @@ go get github.com/dlarregola/arca_invoice_lib
 
 
 # O clonar el repositorio
-git clone https://github.com/afip-go/afip-go.git
-cd afip-go
+git clone https://github.com/arca-go/arca-go.git
+cd arca-go
 go mod tidy
 ```
 
@@ -42,8 +42,8 @@ go mod tidy
 package main
 
 import (
-    "github.com/afip-go/pkg/client"
-    "github.com/afip-go/pkg/models"
+    "github.com/arca-go/pkg/client"
+    "github.com/arca-go/pkg/models"
     "time"
 )
 
@@ -70,7 +70,7 @@ func main() {
     }
     
     // Crear cliente
-    afipClient, err := client.NewAFIPClient(config)
+    arcaClient, err := client.NewARCAClient(config)
     if err != nil {
         log.Fatal(err)
     }
@@ -128,7 +128,7 @@ if err := config.Validate(); err != nil {
 
 // Probar conexión
 ctx := context.Background()
-if err := afipClient.TestConnection(ctx); err != nil {
+if err := arcaClient.TestConnection(ctx); err != nil {
     log.Fatal("Error de conexión:", err)
 }
 ```
@@ -143,7 +143,7 @@ import "github.com/sirupsen/logrus"
 logger := logrus.New()
 logger.SetLevel(logrus.DebugLevel)
 
-afipClient.SetLogger(logger)
+arcaClient.SetLogger(logger)
 ```
 
 ### Configurar Logging Detallado
@@ -161,8 +161,8 @@ config := client.DefaultConfig().
 
 ```go
 if err != nil {
-    if afipErr, ok := err.(*models.AFIPError); ok {
-        switch afipErr.Code {
+    if arcaErr, ok := err.(*models.ARCAError); ok {
+        switch arcaErr.Code {
         case "10015":
             log.Println("CUIT no habilitado")
         case "10016":
@@ -170,7 +170,7 @@ if err != nil {
         case "10017":
             log.Println("Certificado expirado")
         default:
-            log.Printf("Error AFIP: %s - %s", afipErr.Code, afipErr.Message)
+            log.Printf("Error ARCA: %s - %s", arcaErr.Code, arcaErr.Message)
         }
     }
 }
@@ -194,11 +194,11 @@ La librería maneja automáticamente el cache de tickets de acceso:
 
 ```go
 // Verificar tamaño del cache
-size := afipClient.GetAuthCacheSize()
+size := arcaClient.GetAuthCacheSize()
 fmt.Printf("Tickets en cache: %d\n", size)
 
 // Limpiar cache manualmente
-afipClient.ClearAuthCache()
+arcaClient.ClearAuthCache()
 ```
 
 ## Configuración de Seguridad
@@ -207,12 +207,12 @@ afipClient.ClearAuthCache()
 
 ```go
 // Usar variables de entorno
-cert := []byte(os.Getenv("AFIP_CERTIFICATE"))
-privateKey := []byte(os.Getenv("AFIP_PRIVATE_KEY"))
+cert := []byte(os.Getenv("ARCA_CERTIFICATE"))
+privateKey := []byte(os.Getenv("ARCA_PRIVATE_KEY"))
 
 // O usar un gestor de secretos
-cert := getSecret("afip-certificate")
-privateKey := getSecret("afip-private-key")
+cert := getSecret("arca-certificate")
+privateKey := getSecret("arca-private-key")
 ```
 
 ### 2. Configuración de Timeouts
@@ -244,8 +244,8 @@ import (
     "fmt"
     "log"
     
-    "github.com/afip-go/pkg/client"
-    "github.com/afip-go/pkg/models"
+    "github.com/arca-go/pkg/client"
+    "github.com/arca-go/pkg/models"
 )
 
 func main() {
@@ -260,7 +260,7 @@ func main() {
     }
     
     // Crear cliente
-    afipClient, err := client.NewAFIPClient(config)
+    arcaClient, err := client.NewARCAClient(config)
     if err != nil {
         log.Fatal("Error creando cliente:", err)
     }
@@ -268,11 +268,11 @@ func main() {
     // Probar servicios
     ctx := context.Background()
     
-    if afipClient.WSFE() != nil {
+    if arcaClient.WSFE() != nil {
         fmt.Println("✓ Servicio WSFE disponible")
     }
     
-    if afipClient.WSFEX() != nil {
+    if arcaClient.WSFEX() != nil {
         fmt.Println("✓ Servicio WSFEX disponible")
     }
     
@@ -293,4 +293,4 @@ func main() {
 - **Documentación**: [README.md](../README.md)
 - **Ejemplos**: [examples/](../examples/)
 - **Tests**: [tests/](../tests/)
-- **Issues**: [GitHub Issues](https://github.com/afip-go/afip-go/issues)
+- **Issues**: [GitHub Issues](https://github.com/arca-go/arca-go/issues)

@@ -1,11 +1,11 @@
-# AFIP Go Library - Multi-Tenant
+# ARCA Go Library - Multi-Tenant
 
 [![Go](https://github.com/YOUR_USERNAME/invoiceservice/workflows/Go/badge.svg)](https://github.com/YOUR_USERNAME/invoiceservice/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/YOUR_USERNAME/invoiceservice)](https://goreportcard.com/report/github.com/YOUR_USERNAME/invoiceservice)
 [![GoDoc](https://godoc.org/github.com/YOUR_USERNAME/invoiceservice?status.svg)](https://godoc.org/github.com/YOUR_USERNAME/invoiceservice)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Librería en Go para interactuar con los Web Services de facturación electrónica de AFIP (WSFEv1 y WSFEXv1) con soporte para arquitectura multi-tenant.
+Librería en Go para interactuar con los Web Services de facturación electrónica de ARCA (WSFEv1 y WSFEXv1) con soporte para arquitectura multi-tenant.
 
 ## Características
 
@@ -23,11 +23,11 @@ Librería en Go para interactuar con los Web Services de facturación electróni
 
 ## Arquitectura Multi-Tenant
 
-La librería implementa un patrón multi-tenant donde cada empresa gestiona su propia conexión a AFIP:
+La librería implementa un patrón multi-tenant donde cada empresa gestiona su propia conexión a ARCA:
 
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Application   │    │  AFIP Manager    │    │   AFIP Client   │
+│   Application   │    │  ARCA Manager    │    │   ARCA Client   │
 │                 │    │                  │    │                 │
 │ Company A ──────┼───▶│  Cache Manager   │───▶│  Company A      │
 │ Company B ──────┼───▶│  Config Provider │───▶│  Company B      │
@@ -46,7 +46,7 @@ La librería implementa un patrón multi-tenant donde cada empresa gestiona su p
 ## Instalación
 
 ```bash
-go get github.com/afip-go
+go get github.com/arca-go
 ```
 
 ## Uso Multi-Tenant
@@ -138,14 +138,14 @@ func main() {
 ```go
 // InvoiceService maneja facturas para múltiples empresas
 type InvoiceService struct {
-    afipManager interfaces.AFIPClientManager
+    arcaManager interfaces.ARCAClientManager
 }
 
 func (s *InvoiceService) CreateInvoice(ctx context.Context, companyConfig interfaces.CompanyConfig, invoiceData *models.Invoice) error {
     // Obtener cliente específico de la empresa
-    client, err := s.afipManager.GetClientForCompany(ctx, companyConfig)
+    client, err := s.arcaManager.GetClientForCompany(ctx, companyConfig)
     if err != nil {
-        return fmt.Errorf("failed to get AFIP client: %w", err)
+        return fmt.Errorf("failed to get ARCA client: %w", err)
     }
     
     // Usar servicios específicos
@@ -176,11 +176,11 @@ manager.InvalidateClient("empresa-001")
 
 ## Interfaces Principales
 
-### AFIPClientManager
+### ARCAClientManager
 
 ```go
-type AFIPClientManager interface {
-    GetClientForCompany(ctx context.Context, companyConfig CompanyConfig) (AFIPClient, error)
+type ARCAClientManager interface {
+    GetClientForCompany(ctx context.Context, companyConfig CompanyConfig) (ARCAClient, error)
     ValidateCompanyConfig(config CompanyConfig) error
     CleanupInactiveClients(maxIdleTime time.Duration)
     InvalidateClient(companyID string)
@@ -188,10 +188,10 @@ type AFIPClientManager interface {
 }
 ```
 
-### AFIPClient
+### ARCAClient
 
 ```go
-type AFIPClient interface {
+type ARCAClient interface {
     WSFE() WSFEService
     WSFEX() WSFEXService
     GetCompanyInfo() CompanyInfo
@@ -216,9 +216,9 @@ type CompanyConfig interface {
 
 ### 1. Obtener Certificados
 
-Para usar los Web Services de AFIP necesitas:
+Para usar los Web Services de ARCA necesitas:
 
-1. **CUIT habilitado** en AFIP
+1. **CUIT habilitado** en ARCA
 2. **Certificado X.509** (.crt)
 3. **Clave privada** (.key)
 
@@ -296,8 +296,8 @@ El nuevo patrón de configuración en tiempo de ejecución se puede usar de la s
 
 ```go
 // 1. Crear manager
-factory := afip.NewClientManagerFactory()
-manager := factory.CreateManager(afip.ManagerConfig{
+factory := arca.NewClientManagerFactory()
+manager := factory.CreateManager(arca.ManagerConfig{
     ClientCacheSize:   100,
     ClientIdleTimeout: 30 * time.Minute,
     HTTPTimeout:       30 * time.Second,
@@ -314,9 +314,9 @@ func (s *InvoiceService) CreateInvoice(ctx context.Context, companyID string, in
     }
     
     // Obtener cliente usando la configuración
-    client, err := s.afipManager.GetClientForCompany(ctx, companyConfig)
+    client, err := s.arcaManager.GetClientForCompany(ctx, companyConfig)
     if err != nil {
-        return fmt.Errorf("failed to get AFIP client: %w", err)
+        return fmt.Errorf("failed to get ARCA client: %w", err)
     }
     
     // Usar servicios
@@ -332,10 +332,10 @@ func (s *InvoiceService) CreateInvoice(ctx context.Context, companyID string, in
 ## Estructura del Proyecto
 
 ```
-afip-go/
+arca-go/
 ├── pkg/
 │   ├── interfaces/            # Interfaces públicas
-│   │   ├── client.go         # AFIPClientManager, AFIPClient
+│   │   ├── client.go         # ARCAClientManager, ARCAClient
 │   │   ├── wsfe.go           # WSFEService interface
 │   │   ├── wsfex.go          # WSFEXService interface
 │   │   └── auth.go           # AuthService interface
@@ -350,7 +350,7 @@ afip-go/
 ├── internal/
 │   ├── client/               # Implementaciones privadas
 │   │   ├── manager.go        # clientManager (privado)
-│   │   └── afip_client.go    # afipClient (privado)
+│   │   └── arca_client.go    # arcaClient (privado)
 │   ├── services/             # Servicios privados
 │   │   ├── wsfe/
 │   │   ├── wsfex/
@@ -377,6 +377,6 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 
 Para soporte y preguntas:
 
-- 📧 Email: support@afip-go.com
+- 📧 Email: support@arca-go.com
 - 📖 Documentación: [docs/](docs/)
-- 🐛 Issues: [GitHub Issues](https://github.com/afip-go/issues)
+- 🐛 Issues: [GitHub Issues](https://github.com/arca-go/issues)

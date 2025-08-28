@@ -5,31 +5,31 @@ import (
 	"strings"
 )
 
-// AFIPError representa un error específico de AFIP
-type AFIPError struct {
+// ARCAError representa un error específico de ARCA
+type ARCAError struct {
 	Code    string `json:"code" xml:"code"`
 	Message string `json:"message" xml:"message"`
 	Details string `json:"details,omitempty" xml:"details,omitempty"`
 }
 
 // Error implementa la interfaz error
-func (e *AFIPError) Error() string {
+func (e *ARCAError) Error() string {
 	if e.Details != "" {
-		return fmt.Sprintf("AFIP Error %s: %s - %s", e.Code, e.Message, e.Details)
+		return fmt.Sprintf("ARCA Error %s: %s - %s", e.Code, e.Message, e.Details)
 	}
-	return fmt.Sprintf("AFIP Error %s: %s", e.Code, e.Message)
+	return fmt.Sprintf("ARCA Error %s: %s", e.Code, e.Message)
 }
 
-// IsAFIPError verifica si un error es un AFIPError
-func IsAFIPError(err error) bool {
-	_, ok := err.(*AFIPError)
+// IsARCAError verifica si un error es un ARCAError
+func IsARCAError(err error) bool {
+	_, ok := err.(*ARCAError)
 	return ok
 }
 
-// GetAFIPError extrae un AFIPError de un error
-func GetAFIPError(err error) *AFIPError {
-	if afipErr, ok := err.(*AFIPError); ok {
-		return afipErr
+// GetARCAError extrae un ARCAError de un error
+func GetARCAError(err error) *ARCAError {
+	if arcaErr, ok := err.(*ARCAError); ok {
+		return arcaErr
 	}
 	return nil
 }
@@ -105,7 +105,7 @@ func (e *NetworkError) Error() string {
 	return fmt.Sprintf("Network Error: %s", e.Message)
 }
 
-// Códigos de error comunes de AFIP
+// Códigos de error comunes de ARCA
 const (
 	// Errores de autenticación
 	ErrorCodeCUITNotEnabled     = "10015"
@@ -168,9 +168,9 @@ func GetErrorMessage(code string) string {
 	return "Error desconocido"
 }
 
-// NewAFIPError crea un nuevo error de AFIP
-func NewAFIPError(code, details string) *AFIPError {
-	return &AFIPError{
+// NewARCAError crea un nuevo error de ARCA
+func NewARCAError(code, details string) *ARCAError {
+	return &ARCAError{
 		Code:    code,
 		Message: GetErrorMessage(code),
 		Details: details,

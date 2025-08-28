@@ -1,11 +1,12 @@
 package client
 
 import (
-	"github.com/dlarregola/arca_invoice_lib/pkg/models"
 	"time"
+
+	"github.com/dlarregola/arca_invoice_lib/pkg/models"
 )
 
-// Config representa la configuración del cliente AFIP
+// Config representa la configuración del cliente ARCA
 type Config struct {
 	// Configuración básica
 	Environment models.Environment `json:"environment" yaml:"environment"`

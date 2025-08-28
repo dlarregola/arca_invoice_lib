@@ -1,8 +1,6 @@
 package auth
 
 import (
-	"github.com/dlarregola/arca_invoice_lib/internal/shared"
-	"github.com/dlarregola/arca_invoice_lib/pkg/interfaces"
 	"bytes"
 	"context"
 	"crypto"
@@ -17,6 +15,9 @@ import (
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/dlarregola/arca_invoice_lib/internal/shared"
+	"github.com/dlarregola/arca_invoice_lib/pkg/interfaces"
 )
 
 // wsaaService es la implementación privada del servicio de autenticación
@@ -246,7 +247,7 @@ func (s *wsaaService) callWSAA(ctx context.Context, cms string) (string, error) 
 	// Configurar headers
 	req.Header.Set("Content-Type", "text/xml; charset=utf-8")
 	req.Header.Set("SOAPAction", "http://wsaa.view.sua.dvadac.desein.afip.gov/loginCms")
-	req.Header.Set("User-Agent", "AFIP-Go-Client/1.0")
+	req.Header.Set("User-Agent", "ARCA-Go-Client/1.0")
 
 	// Realizar request
 	client := &http.Client{Timeout: s.config.Timeout}

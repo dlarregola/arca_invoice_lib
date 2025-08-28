@@ -1,13 +1,14 @@
 package client
 
 import (
-	"github.com/dlarregola/arca_invoice_lib/internal/shared"
-	"github.com/dlarregola/arca_invoice_lib/pkg/errors"
-	"github.com/dlarregola/arca_invoice_lib/pkg/interfaces"
 	"context"
 	"fmt"
 	"sync"
 	"time"
+
+	"github.com/dlarregola/arca_invoice_lib/internal/shared"
+	"github.com/dlarregola/arca_invoice_lib/pkg/errors"
+	"github.com/dlarregola/arca_invoice_lib/pkg/interfaces"
 )
 
 // ManagerConfig representa la configuración del manager
@@ -47,7 +48,7 @@ type clientManager struct {
 
 // cachedClient representa un cliente en cache
 type cachedClient struct {
-	client    interfaces.AFIPClient
+	client    interfaces.ARCAClient
 	lastUsed  time.Time
 	companyID string
 	createdAt time.Time
@@ -57,7 +58,7 @@ type cachedClient struct {
 type internalConfig = shared.InternalConfig
 
 // newClientManager crea una nueva instancia del manager
-func NewClientManager(config ManagerConfig) interfaces.AFIPClientManager {
+func NewClientManager(config ManagerConfig) interfaces.ARCAClientManager {
 	return &clientManager{
 		clientCache: make(map[string]*cachedClient),
 		config:      config,
@@ -66,7 +67,7 @@ func NewClientManager(config ManagerConfig) interfaces.AFIPClientManager {
 }
 
 // GetClientForCompany obtiene un cliente específico para una empresa
-func (m *clientManager) GetClientForCompany(ctx context.Context, companyConfig interfaces.CompanyConfig) (interfaces.AFIPClient, error) {
+func (m *clientManager) GetClientForCompany(ctx context.Context, companyConfig interfaces.CompanyConfig) (interfaces.ARCAClient, error) {
 	// Validar configuración
 	if err := m.ValidateCompanyConfig(companyConfig); err != nil {
 		return nil, fmt.Errorf("invalid company config: %w", err)
@@ -198,7 +199,7 @@ func (m *clientManager) GetCacheStats() interfaces.CacheStats {
 }
 
 // getCachedClient obtiene un cliente del cache
-func (m *clientManager) getCachedClient(companyID string) interfaces.AFIPClient {
+func (m *clientManager) getCachedClient(companyID string) interfaces.ARCAClient {
 	m.cacheMutex.RLock()
 	defer m.cacheMutex.RUnlock()
 
@@ -224,7 +225,7 @@ func (m *clientManager) getCachedClient(companyID string) interfaces.AFIPClient 
 }
 
 // cacheClient guarda un cliente en el cache
-func (m *clientManager) cacheClient(companyID string, client interfaces.AFIPClient) {
+func (m *clientManager) cacheClient(companyID string, client interfaces.ARCAClient) {
 	m.cacheMutex.Lock()
 	defer m.cacheMutex.Unlock()
 
@@ -257,8 +258,8 @@ func (m *clientManager) cacheClient(companyID string, client interfaces.AFIPClie
 	}
 }
 
-// createNewClient crea un nuevo cliente AFIP
-func (m *clientManager) createNewClient(config interfaces.CompanyConfig) (interfaces.AFIPClient, error) {
+// createNewClient crea un nuevo cliente ARCA
+func (m *clientManager) createNewClient(config interfaces.CompanyConfig) (interfaces.ARCAClient, error) {
 	// Crear configuración interna
 	internalConfig := &internalConfig{
 		CUIT:          config.GetCUIT(),
@@ -270,7 +271,7 @@ func (m *clientManager) createNewClient(config interfaces.CompanyConfig) (interf
 	}
 
 	// Crear cliente interno
-	client := &afipClient{
+	client := &arcaClient{
 		companyConfig: config,
 		config:        internalConfig,
 		logger:        m.config.Logger,
