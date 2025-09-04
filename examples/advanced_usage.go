@@ -8,7 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dlarregola/arca_invoice_lib/internal/client"
 	"github.com/dlarregola/arca_invoice_lib/pkg/factory"
 	"github.com/dlarregola/arca_invoice_lib/pkg/interfaces"
 	"github.com/dlarregola/arca_invoice_lib/pkg/models"
@@ -259,14 +258,8 @@ func runAdvancedExample() {
 	db := setupMockDatabase()
 
 	// 2. Crear factory y manager
-	factory := factory.NewClientManagerFactory()
-	manager := factory.CreateManager(client.ManagerConfig{
-		ClientCacheSize:   200,              // Más clientes para multi-tenant
-		ClientIdleTimeout: 60 * time.Minute, // Timeout más largo
-		HTTPTimeout:       60 * time.Second, // Timeout HTTP más largo
-		MaxRetryAttempts:  5,                // Más reintentos
-		Logger:            &AdvancedLogger{},
-	})
+	factory := factory.NewClientManagerFactory(200, 60*time.Minute, 60*time.Second, 5, &AdvancedLogger{})
+	manager := factory.CreateManager()
 
 	// 3. Crear proveedor de configuraciones
 	configProvider := NewDatabaseCompanyConfigProvider(db)

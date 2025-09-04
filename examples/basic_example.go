@@ -7,7 +7,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/dlarregola/arca_invoice_lib/internal/client"
 	"github.com/dlarregola/arca_invoice_lib/pkg/factory"
 	"github.com/dlarregola/arca_invoice_lib/pkg/interfaces"
 	"github.com/dlarregola/arca_invoice_lib/pkg/models"
@@ -23,11 +22,11 @@ type CompanyConfiguration struct {
 }
 
 // Implementar métodos de la interfaz
-func (c *CompanyConfiguration) GetCUIT() string                    { return c.CUIT }
-func (c *CompanyConfiguration) GetCertificate() []byte             { return c.Certificate }
-func (c *CompanyConfiguration) GetPrivateKey() []byte              { return c.PrivateKey }
-func (c *CompanyConfiguration) GetEnvironment() string             { return c.Environment }
-func (c *CompanyConfiguration) GetCompanyID() string               { return c.CompanyID }
+func (c *CompanyConfiguration) GetCUIT() string        { return c.CUIT }
+func (c *CompanyConfiguration) GetCertificate() []byte { return c.Certificate }
+func (c *CompanyConfiguration) GetPrivateKey() []byte  { return c.PrivateKey }
+func (c *CompanyConfiguration) GetEnvironment() string { return c.Environment }
+func (c *CompanyConfiguration) GetCompanyID() string   { return c.CompanyID }
 
 // MyLogger implementa la interfaz Logger
 type MyLogger struct{}
@@ -49,16 +48,10 @@ func main() {
 	}
 
 	// 2. Crear factory
-	factory := factory.NewClientManagerFactory()
+	factory := factory.NewClientManagerFactory(100, 30*time.Minute, 30*time.Second, 3, &MyLogger{})
 
 	// 3. Configurar manager
-	manager := factory.CreateManager(client.ManagerConfig{
-		ClientCacheSize:   100,                    // Máximo 100 clientes en cache
-		ClientIdleTimeout: 30 * time.Minute,       // Timeout de inactividad
-		HTTPTimeout:       30 * time.Second,       // Timeout HTTP
-		MaxRetryAttempts:  3,                      // Reintentos
-		Logger:            &MyLogger{},            // Logger personalizado
-	})
+	manager := factory.CreateManager()
 
 	// 4. Crear configuración de empresa
 	companyConfig := &CompanyConfiguration{
@@ -111,7 +104,7 @@ func main() {
 
 	// 13. Mostrar estadísticas del cache
 	stats := manager.GetCacheStats()
-	log.Printf("Cache Stats: Total=%d, Active=%d, Inactive=%d", 
+	log.Printf("Cache Stats: Total=%d, Active=%d, Inactive=%d",
 		stats.TotalClients, stats.ActiveClients, stats.InactiveClients)
 
 	// 14. Cerrar cliente
@@ -142,15 +135,15 @@ func createNationalInvoice(ctx context.Context, client interfaces.ARCAClient) er
 	// Crear factura
 	invoice := &models.Invoice{
 		InvoiceBase: models.InvoiceBase{
-			InvoiceType:   models.InvoiceTypeA,
-			PointOfSale:   1,
-			DateFrom:      time.Now(),
-			DateTo:        time.Now(),
-			ConceptType:   models.ConceptTypeProducts,
-			CurrencyType:  models.CurrencyTypePES,
-			Amount:        1000.0,
-			TaxAmount:     210.0,
-			TotalAmount:   1210.0,
+			InvoiceType:  models.InvoiceTypeA,
+			PointOfSale:  1,
+			DateFrom:     time.Now(),
+			DateTo:       time.Now(),
+			ConceptType:  models.ConceptTypeProducts,
+			CurrencyType: models.CurrencyTypePES,
+			Amount:       1000.0,
+			TaxAmount:    210.0,
+			TotalAmount:  1210.0,
 			Items: []models.Item{
 				{
 					Description: "Producto de ejemplo",
@@ -191,16 +184,16 @@ func createExportInvoice(ctx context.Context, client interfaces.ARCAClient) erro
 	// Crear factura de exportación
 	exportInvoice := &models.ExportInvoice{
 		InvoiceBase: models.InvoiceBase{
-			InvoiceType:   models.InvoiceTypeE,
-			PointOfSale:   1,
-			DateFrom:      time.Now(),
-			DateTo:        time.Now(),
-			ConceptType:   models.ConceptTypeProducts,
-			CurrencyType:  models.CurrencyTypeUSD,
-			CurrencyRate:  100.0, // Tipo de cambio
-			Amount:        1000.0,
-			TaxAmount:     0.0, // Exportación no paga IVA
-			TotalAmount:   1000.0,
+			InvoiceType:  models.InvoiceTypeE,
+			PointOfSale:  1,
+			DateFrom:     time.Now(),
+			DateTo:       time.Now(),
+			ConceptType:  models.ConceptTypeProducts,
+			CurrencyType: models.CurrencyTypeUSD,
+			CurrencyRate: 100.0, // Tipo de cambio
+			Amount:       1000.0,
+			TaxAmount:    0.0, // Exportación no paga IVA
+			TotalAmount:  1000.0,
 			Items: []models.Item{
 				{
 					Description: "Producto de exportación",
@@ -262,7 +255,7 @@ func getSystemParameters(ctx context.Context, client interfaces.ARCAClient) erro
 		return fmt.Errorf("failed to get invoice types: %w", err)
 	}
 
-	log.Printf("System parameters: DocumentTypes=%d, InvoiceTypes=%d", 
+	log.Printf("System parameters: DocumentTypes=%d, InvoiceTypes=%d",
 		len(docTypes), len(invoiceTypes))
 	return nil
 }
